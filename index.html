@@ -3,1679 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Home Digital Twin</title>
+    <title>Smart Home 3D Simulation</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
             font-family: Arial, sans-serif;
-        }
-        #container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
+            background: #000;
         }
         #controls {
             position: absolute;
             top: 20px;
             left: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
             border-radius: 10px;
-            z-index: 1000;
             color: white;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
         }
         .control-group {
-            margin-bottom: 10px;
-            position: relative;
+            margin-bottom: 15px;
         }
         .control-label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: bold;
-            color: white;
         }
         button {
-            margin-right: 5px;
-            padding: 5px 10px;
-            cursor: pointer;
-            position: relative;
-            z-index: 1;
+            margin-right: 10px;
+            padding: 8px 15px;
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            border-radius: 4px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        button.active {
+            background: #4CAF50;
+            border-color: #4CAF50;
         }
         input[type="range"] {
-            width: 100px;
+            width: 120px;
+            margin-left: 10px;
         }
-        .active {
-            background: #4CAF50;
+        #info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
             color: white;
-        }
-        #navigation {
-            display: none;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-    <div id="container">
-        <div id="controls">
-            <h3>Smart Home Controls</h3>
-            <div class="control-group">
-                <span class="control-label">Ceiling Lights:</span>
-                <button id="lights-on">On</button>
-                <button id="lights-off">Off</button>
-                <input type="range" id="light-intensity" min="0" max="100" value="80">
-            </div>
-            <div class="control-group">
-                <span class="control-label">LED Panel Lights:</span>
-                <button id="led-on">On</button>
-                <button id="led-off">Off</button>
-                <input type="range" id="led-intensity" min="0" max="100" value="80">
-            </div>
-            <div class="control-group">
-                <span class="control-label">AC:</span>
-                <button id="ac-on">On</button>
-                <button id="ac-off">Off</button>
-                <span>Temperature: </span>
-                <input type="range" id="ac-temp" min="16" max="30" value="22">
-                <span id="temp-value">22°C</span>
-            </div>
-            <div class="control-group">
-                <span class="control-label">Ceiling Fan:</span>
-                <button id="fan-off">Off</button>
-                <button id="fan-low">Low</button>
-                <button id="fan-medium">Medium</button>
-                <button id="fan-high">High</button>
-            </div>
-            <div class="control-group">
-                <span class="control-label">TV & Speakers:</span>
-                <button id="tv-speaker-on">On</button>
-                <button id="tv-speaker-off">Off</button>
-            </div>
-            <div class="control-group">
-                <span class="control-label">Wall Lights:</span>
-                <button id="wall-lights-toggle">on/off</button>
-            </div>
-            <div class="control-group">
-                <span class="control-label">Disco Lights:</span>
-                <button id="disco-on">On</button>
-                <button id="disco-off">Off</button>
-                <input type="range" id="disco-speed" min="1" max="10" value="5">
-                <span>Speed</span>
-            </div>
-            <div class="control-group">
-                <span class="control-label">Smart Plant:</span>
-                <button id="watering-system-on">Water On</button>
-                <button id="watering-system-off">Water Off</button>
-                <span>Moisture: </span>
-                <input type="range" id="moisture-level" min="0" max="100" value="20">
-                <span id="moisture-value">20%</span>
-            </div>
-            <div class="control-group">
-                <span class="control-label">Curtains:</span>
-                <button id="curtains-toggle">open/close</button>
-                <select id="curtain-color">
-                    <option value="beige">Beige</option>
-                    <option value="grey">Grey</option>
-                    <option value="black">Black</option>
-                </select>
-            </div>
+    <div id="controls">
+        <h3>Smart Home Controls</h3>
+        
+        <div class="control-group">
+            <span class="control-label">Room Lights:</span>
+            <button id="lights-on">ON</button>
+            <button id="lights-off">OFF</button>
+            <input type="range" id="light-intensity" min="0" max="100" value="80">
         </div>
-        <div id="navigation"></div>
+        
+        <div class="control-group">
+            <span class="control-label">Ceiling Fan:</span>
+            <button id="fan-off">OFF</button>
+            <button id="fan-low">LOW</button>
+            <button id="fan-high">HIGH</button>
+        </div>
+        
+        <div class="control-group">
+            <span class="control-label">TV:</span>
+            <button id="tv-on">ON</button>
+            <button id="tv-off">OFF</button>
+        </div>
+        
+        <div class="control-group">
+            <span class="control-label">AC Temperature:</span>
+            <input type="range" id="ac-temp" min="16" max="30" value="22">
+            <span id="temp-display">22°C</span>
+        </div>
+    </div>
+
+    <div id="info">
+        Use mouse to rotate view | Scroll to zoom
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // Scene setup
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0xEEEEEE);
+        scene.background = new THREE.Color(0x222222);
         
-        // Camera setup
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 5, 15);
+        camera.position.set(0, 5, 10);
         
-        // Camera target
-        const cameraTarget = new THREE.Vector3(0, 0, 0);
-        camera.lookAt(cameraTarget);
-        
-        // Renderer setup
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
-        document.getElementById('container').appendChild(renderer.domElement);
-        
-        // Smart home controls
-        let lightsOn = true;
-        let ledOn = true;
-        let acOn = false;
-        let fanSpeed = 0; // 0 = off, 1 = low, 2 = medium, 3 = high
-        let tvSpeakerOn = false;
-        let lightIntensity = 0.8;
-        let ledIntensity = 0.8;
-        let temperature = 22;
-        let plantNeedsWater = true;
-let plantWateringSystem = false;
-let moistureLevel = 20; // 0-100
-let curtainsOpen = false;
-let curtainColor = "beige";
-        // let curtainsOpen = false;
-        
-        // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
         scene.add(ambientLight);
-        
-        const ceilingLight1 = new THREE.PointLight(0xffffff, 0.8, 20);
-        ceilingLight1.position.set(0, 6, 0);
-        ceilingLight1.castShadow = true;
-        scene.add(ceilingLight1);
-        
-        const ceilingLight2 = new THREE.PointLight(0xffffff, 0.8, 20);
-        ceilingLight2.position.set(-6, 6, 0);
-        ceilingLight2.castShadow = true;
-        scene.add(ceilingLight2);
-        
-        const ceilingLight3 = new THREE.PointLight(0xffffff, 0.8, 20);
-        ceilingLight3.position.set(6, 6, 0);
-        ceilingLight3.castShadow = true;
-        scene.add(ceilingLight3);
-        
-        const diningLight = new THREE.SpotLight(0xB0E0E6, 0.8, 20, Math.PI/4);
-        diningLight.position.set(6, 6, -4);
-        diningLight.castShadow = true;
-        scene.add(diningLight);
-        
-        // LED Panel Lights
-        const ledPanelMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0xffffff, 
-            emissive: 0xffffff, 
-            emissiveIntensity: 0 
-        });
-        
-        const ledPanelGeometry = new THREE.BoxGeometry(2, 0.1, 2);
-        
-        const ledPanel1 = new THREE.Mesh(ledPanelGeometry, ledPanelMaterial.clone());
-        ledPanel1.position.set(-10, 7.9, -10);
-        ledPanel1.castShadow = true;
-        scene.add(ledPanel1);
-        
-        const ledPanel2 = new THREE.Mesh(ledPanelGeometry, ledPanelMaterial.clone());
-        ledPanel2.position.set(10, 7.9, -10);
-        ledPanel2.castShadow = true;
-        scene.add(ledPanel2);
-        
-        const ledLight1 = new THREE.PointLight(0xffffff, 0.8, 15);
-        ledLight1.position.set(-10, 7.8, -10);
-        ledLight1.castShadow = true;
-        scene.add(ledLight1);
-        
-        const ledLight2 = new THREE.PointLight(0xffffff, 0.8, 15);
-        ledLight2.position.set(10, 7.8, -10);
-        ledLight2.castShadow = true;
-        scene.add(ledLight2);
 
-        // Disco lights
-const discoColors = [0xFF0000, 0x00FF00, 0x0000FF, 0xFF00FF, 0xFFFF00, 0x00FFFF];
-let discoLightsOn = false;
-let discoSpeed = 5;
+        const roomLight = new THREE.PointLight(0xffffff, 1, 20);
+        roomLight.position.set(0, 8, 0);
+        roomLight.castShadow = true;
+        scene.add(roomLight);
 
-const discoLight1 = new THREE.SpotLight(0xFF0000, 1.0, 15, Math.PI/4, 0.5);
-discoLight1.position.set(-10, 7.5, -5);
-discoLight1.castShadow = true;
-discoLight1.visible = false;
-scene.add(discoLight1);
-
-const discoLight2 = new THREE.SpotLight(0x00FF00, 1.0, 15, Math.PI/4, 0.5);
-discoLight2.position.set(0, 7.5, -5);
-discoLight2.castShadow = true;
-discoLight2.visible = false;
-scene.add(discoLight2);
-
-const discoLight3 = new THREE.SpotLight(0x0000FF, 1.0, 15, Math.PI/4, 0.5);
-discoLight3.position.set(10, 7.5, -5);
-discoLight3.castShadow = true;
-discoLight3.visible = false;
-scene.add(discoLight3);
-
-// Disco ball
-const discoBall = new THREE.Group();
-discoBall.position.set(0, 6.5, -7);
-
-const discoBallCore = new THREE.Mesh(
-    new THREE.SphereGeometry(0.5, 16, 16),
-    new THREE.MeshStandardMaterial({
-        color: 0x888888,
-        metalness: 0.8,
-        roughness: 0.2
-    })
-);
-discoBall.add(discoBallCore);
-
-// Create mirrored facets
-for (let i = 0; i < 50; i++) {
-    const facet = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.2, 0.2),
-        new THREE.MeshStandardMaterial({
-            color: 0xFFFFFF,
-            metalness: 1.0,
-            roughness: 0.0,
-            emissive: 0xFFFFFF,
-            emissiveIntensity: 0.2
-        })
-    );
-    
-    // Random position on sphere
-    const phi = Math.acos(-1 + 2 * Math.random());
-    const theta = 2 * Math.PI * Math.random();
-    facet.position.x = 0.5 * Math.sin(phi) * Math.cos(theta);
-    facet.position.y = 0.5 * Math.sin(phi) * Math.sin(theta);
-    facet.position.z = 0.5 * Math.cos(phi);
-    
-    // Face outward
-    facet.lookAt(0, 0, 0);
-    facet.position.multiplyScalar(1.01); // Push slightly outward
-    
-    discoBall.add(facet);
-}
-
-scene.add(discoBall);
-discoBall.visible = true
-// Mount for disco ball
-const discoMount = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.05, 0.05, 1.5, 8),
-    new THREE.MeshStandardMaterial({ color: 0x333333 })
-);
-discoMount.position.set(0, 7.25, -7);
-discoMount.visible = false;
-scene.add(discoMount);
-
-// Add event listeners for disco controls
-document.getElementById('disco-on').addEventListener('click', () => {
-    discoLightsOn = true;
-    discoLight1.visible = true;
-    discoLight2.visible = true;
-    discoLight3.visible = true;
-    discoBall.visible = true;
-    discoMount.visible = true;
-    updateButtonStates();
-});
-
-document.getElementById('disco-off').addEventListener('click', () => {
-    discoLightsOn = false;
-    discoLight1.visible = false;
-    discoLight2.visible = false;
-    discoLight3.visible = false;
-    discoBall.visible = true;
-    discoMount.visible = true;
-    updateButtonStates();
-});
-
-document.getElementById('disco-speed').addEventListener('input', (e) => {
-    discoSpeed = parseInt(e.target.value);
-});
-
-        // Wall sconce lights - moved even higher (y=6) with better lighting
-        const sconceLight1 = new THREE.PointLight(0xFFE08C, 1.0, 15); // Warm gold
-        sconceLight1.position.set(-14.8, 6, -12);
-        sconceLight1.castShadow = true;
-        sconceLight1.shadow.mapSize.width = 2048;
-        sconceLight1.shadow.mapSize.height = 2048;
-        sconceLight1.visible = false;
-        scene.add(sconceLight1);
-
-        const sconceLight2 = new THREE.PointLight(0xFFE08C, 1.0, 15);
-        sconceLight2.position.set(-14.8, 6, 2);
-        sconceLight2.castShadow = true;
-        sconceLight2.visible = false;
-        scene.add(sconceLight2);
-
-        const sconceLight3 = new THREE.PointLight(0xA7C7E7, 1.0, 15); // Cool blue
-        sconceLight3.position.set(14.8, 6, -12);
-        sconceLight3.castShadow = true;
-        sconceLight3.visible = false;
-        scene.add(sconceLight3);
-
-        const sconceLight4 = new THREE.PointLight(0xA7C7E7, 1.0, 15);
-        sconceLight4.position.set(14.8, 6, 2);
-        sconceLight4.castShadow = true;
-        sconceLight4.visible = false;
-        scene.add(sconceLight4);
-
-        // Premium sconce fixture design
-        function createLuxurySconce(x, y, z, isRightWall) {
-            const sconce = new THREE.Group();
-            
-            // Mounting plate
-            const plateGeometry = new THREE.CylinderGeometry(0.25, 0.25, 0.05, 32);
-            const plate = new THREE.Mesh(plateGeometry, new THREE.MeshStandardMaterial({
-                color: 0x333333,
-                metalness: 0.8,
-                roughness: 0.2
-            }));
-            plate.rotation.x = Math.PI/2;
-            sconce.add(plate);
-            
-            // Curved arm
-            const armCurve = new THREE.CubicBezierCurve3(
-                new THREE.Vector3(0, 0, 0),
-                new THREE.Vector3(0.3, -0.2, 0),
-                new THREE.Vector3(0.6, -0.1, 0),
-                new THREE.Vector3(0.8, 0, 0)
-            );
-            const armGeometry = new THREE.TubeGeometry(armCurve, 20, 0.03, 8, false);
-            const arm = new THREE.Mesh(armGeometry, new THREE.MeshStandardMaterial({
-                color: 0xBBBBBB,
-                metalness: 0.9,
-                roughness: 0.1
-            }));
-            sconce.add(arm);
-            
-            // Glass shade
-            const shadeGeometry = new THREE.SphereGeometry(0.35, 32, 32, 0, Math.PI * 2, 0, Math.PI/2);
-            const shade = new THREE.Mesh(shadeGeometry, new THREE.MeshPhysicalMaterial({
-                color: 0xF8F8FF,
-                transmission: 0.7,
-                roughness: 0.1,
-                ior: 1.4,
-                thickness: 0.05,
-                envMapIntensity: 1,
-                clearcoat: 1,
-                clearcoatRoughness: 0.1
-            }));
-            shade.position.set(0.8, 0, 0);
-            shade.rotation.z = Math.PI/2;
-            sconce.add(shade);
-            
-            // Decorative elements
-            const ringGeometry = new THREE.TorusGeometry(0.15, 0.02, 16, 32);
-            const ring = new THREE.Mesh(ringGeometry, new THREE.MeshStandardMaterial({
-                color: 0xDDDDDD,
-                metalness: 0.95,
-                roughness: 0.1
-            }));
-            ring.position.set(0.8, 0, 0);
-            ring.rotation.x = Math.PI/2;
-            sconce.add(ring);
-            
-            sconce.position.set(x, y, z);
-            sconce.rotation.y = isRightWall ? -Math.PI/2 : Math.PI/2;
-            return sconce;
-        }
-
-        // Add sconces to scene
-        scene.add(createLuxurySconce(-14.9, 6, -12, false));
-        scene.add(createLuxurySconce(-14.9, 6, 2, false));
-        scene.add(createLuxurySconce(14.9, 6, -12, true));
-        scene.add(createLuxurySconce(14.9, 6, 2, true));
-        // Wall light controls
-        let wallLightsOn = false;
-
-        function toggleWallLights() {
-            wallLightsOn = !wallLightsOn;
-            sconceLight1.visible = wallLightsOn;
-            sconceLight2.visible = wallLightsOn;
-            sconceLight3.visible = wallLightsOn;
-            sconceLight4.visible = wallLightsOn;
-            updateButtonStates();
-        }
-    
-
-               
-        // Floor
-        const floorGeometry = new THREE.BoxGeometry(30, 0.2, 30);
-        const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xE8E0D5 });
-        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-        floor.position.y = -0.1;
+        const floor = new THREE.Mesh(
+            new THREE.BoxGeometry(20, 0.1, 15),
+            new THREE.MeshLambertMaterial({ color: 0x8B7355 })
+        );
+        floor.position.y = -0.05;
         floor.receiveShadow = true;
         scene.add(floor);
+
+        const wallMaterial = new THREE.MeshLambertMaterial({ color: 0xF0F0F0 });
         
-        // Walls
-        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xF5F5F5 });
-        
-        const backWallGeometry = new THREE.BoxGeometry(30, 8, 0.2);
-        const backWall = new THREE.Mesh(backWallGeometry, wallMaterial);
-        backWall.position.set(0, 4, -15);
+        const backWall = new THREE.Mesh(
+            new THREE.BoxGeometry(20, 10, 0.1),
+            wallMaterial
+        );
+        backWall.position.set(0, 5, -7.5);
         scene.add(backWall);
-        
-        const leftWallGeometry = new THREE.BoxGeometry(0.2, 8, 30);
-        const leftWall = new THREE.Mesh(leftWallGeometry, wallMaterial);
-        leftWall.position.set(-15, 4, 0);
-        scene.add(leftWall);
-        
-        const rightWallGeometry = new THREE.BoxGeometry(0.2, 8, 30);
-        const rightWall = new THREE.Mesh(rightWallGeometry, wallMaterial);
-        rightWall.position.set(15, 4, 0);
-        scene.add(rightWall);
-        
-        // Windows
-        
-        // Realistic Windows
-const windowMaterial = new THREE.MeshPhysicalMaterial({ 
-    color: 0xffffff,
-    metalness: 0.0,
-    roughness: 0.0,
-    transmission: 0.95,  // Glass transparency
-    thickness: 0.05,     // Glass thickness
-    envMapIntensity: 1.0,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.0,
-    ior: 1.5,           // Index of refraction
-    transparent: true,
-    opacity: 0.6        // Slight opacity for visibility
-});
 
-// Premium frame material
-const frameColor = 0x5C4033; // Rich wood color
-const frameMaterial = new THREE.MeshStandardMaterial({ 
-    color: frameColor,
-    roughness: 0.7,
-    metalness: 0.1 
-});
-
-function createRealisticWindow(x, y, z, width, height) {
-    const windowGroup = new THREE.Group();
-    
-    // Main window glass
-    const glass = new THREE.Mesh(
-        new THREE.BoxGeometry(0.05, height, width),
-        windowMaterial
-    );
-    windowGroup.add(glass);
-    
-    // Outer frame
-    const frameThickness = 0.1;
-    const frameWidth = 0.3;
-    
-    // Top frame
-    const topFrame = new THREE.Mesh(
-        new THREE.BoxGeometry(frameThickness, frameWidth, width + frameWidth * 2),
-        frameMaterial
-    );
-    topFrame.position.set(0, height/2 + frameWidth/2, 0);
-    windowGroup.add(topFrame);
-    
-    // Bottom frame
-    const bottomFrame = new THREE.Mesh(
-        new THREE.BoxGeometry(frameThickness, frameWidth, width + frameWidth * 2),
-        frameMaterial
-    );
-    bottomFrame.position.set(0, -height/2 - frameWidth/2, 0);
-    windowGroup.add(bottomFrame);
-    
-    // Left frame
-    const leftFrame = new THREE.Mesh(
-        new THREE.BoxGeometry(frameThickness, height + frameWidth * 2, frameWidth),
-        frameMaterial
-    );
-    leftFrame.position.set(0, 0, -width/2 - frameWidth/2);
-    windowGroup.add(leftFrame);
-    
-    // Right frame
-    const rightFrame = new THREE.Mesh(
-        new THREE.BoxGeometry(frameThickness, height + frameWidth * 2, frameWidth),
-        frameMaterial
-    );
-    rightFrame.position.set(0, 0, width/2 + frameWidth/2);
-    windowGroup.add(rightFrame);
-    
-    // Window dividers
-    const dividerWidth = 0.15;
-    
-    // Horizontal divider
-    const horizontalDivider = new THREE.Mesh(
-        new THREE.BoxGeometry(frameThickness * 1.5, dividerWidth, width + frameWidth),
-        frameMaterial
-    );
-    horizontalDivider.position.set(0, 0, 0);
-    windowGroup.add(horizontalDivider);
-    
-    // Vertical divider
-    const verticalDivider = new THREE.Mesh(
-        new THREE.BoxGeometry(frameThickness * 1.5, height + frameWidth, dividerWidth),
-        frameMaterial
-    );
-    verticalDivider.position.set(0, 0, 0);
-    windowGroup.add(verticalDivider);
-    
-    // Window sill (bottom ledge)
-    const sill = new THREE.Mesh(
-        new THREE.BoxGeometry(0.3, 0.1, width + 0.6),
-        frameMaterial
-    );
-    sill.position.set(0.1, -height/2 - frameWidth - 0.05, 0);
-    windowGroup.add(sill);
-    
-    windowGroup.position.set(x, y, z);
-    return windowGroup;
-}
-
-// Create and add windows
-scene.add(createRealisticWindow(14.9, 3.5, -10, 4, 5));
-scene.add(createRealisticWindow(14.9, 3.5, -5, 4, 5));
-scene.add(createRealisticWindow(14.9, 3.5, 0, 4, 5));
-
-// Curtain materials
-const curtainMaterials = {
-    beige: new THREE.MeshStandardMaterial({ 
-        color: 0xF0EDE5,
-        roughness: 0.9, 
-        metalness: 0,
-        side: THREE.DoubleSide
-    }),
-    grey: new THREE.MeshStandardMaterial({ 
-        color: 0x808080,
-        roughness: 0.9, 
-        metalness: 0,
-        side: THREE.DoubleSide
-    }),
-    black: new THREE.MeshStandardMaterial({ 
-        color: 0x202020,
-        roughness: 0.9, 
-        metalness: 0,
-        side: THREE.DoubleSide
-    })
-};
-
-// Curtain geometry with fold details
-const curtainGeometry = new THREE.PlaneGeometry(5, 5.5, 10, 10);
-
-// Apply wave pattern to create curtain folds
-const positions = curtainGeometry.attributes.position.array;
-for (let i = 0; i < positions.length; i += 3) {
-    const x = positions[i];
-    positions[i + 2] = Math.sin(x * 5) * 0.1; // Add z-displacement for folds
-}
-
-// Create curtains for each window
-const curtain1 = new THREE.Mesh(curtainGeometry, curtainMaterials.beige);
-curtain1.position.set(14.9, 3.5, -10);
-curtain1.rotation.y = Math.PI / 2; // Face inward
-curtain1.castShadow = true;
-scene.add(curtain1);
-
-const curtain2 = new THREE.Mesh(curtainGeometry, curtainMaterials.beige);
-curtain2.position.set(14.9, 3.5, -5);
-curtain2.rotation.y = Math.PI / 2;
-curtain2.castShadow = true;
-scene.add(curtain2);
-
-const curtain3 = new THREE.Mesh(curtainGeometry, curtainMaterials.beige);
-curtain3.position.set(14.9, 3.5, 0);
-curtain3.rotation.y = Math.PI / 2;
-curtain3.castShadow = true;
-scene.add(curtain3);
-
-const curtains = [curtain1, curtain2, curtain3];
-        
-        // Sofa
-        const sofaBaseGeometry = new THREE.BoxGeometry(6, 1, 3);
-        const sofaBaseMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 });
-        const sofaBase = new THREE.Mesh(sofaBaseGeometry, sofaBaseMaterial);
-        sofaBase.position.set(-12, 0.5, -10);
+        const sofa = new THREE.Group();
+        const sofaBase = new THREE.Mesh(
+            new THREE.BoxGeometry(4, 0.8, 2),
+            new THREE.MeshLambertMaterial({ color: 0x4A4A4A })
+        );
+        sofaBase.position.y = 0.4;
         sofaBase.castShadow = true;
-        sofaBase.receiveShadow = true;
-        scene.add(sofaBase);
-        
-        const sofaBackGeometry = new THREE.BoxGeometry(6, 2, 1);
-        const sofaBack = new THREE.Mesh(sofaBackGeometry, sofaBaseMaterial);
-        sofaBack.position.set(-12, 1.5, -11);
+        sofa.add(sofaBase);
+
+        const sofaBack = new THREE.Mesh(
+            new THREE.BoxGeometry(4, 1.5, 0.5),
+            new THREE.MeshLambertMaterial({ color: 0x4A4A4A })
+        );
+        sofaBack.position.set(0, 1.15, -0.75);
         sofaBack.castShadow = true;
-        sofaBack.receiveShadow = true;
-        scene.add(sofaBack);
+        sofa.add(sofaBack);
+
+        sofa.position.set(-5, 0, 3);
+        scene.add(sofa);
+
+        const tvGroup = new THREE.Group();
         
-        const cushionGeometry = new THREE.BoxGeometry(1.5, 0.5, 2);
-        const cushionMaterial = new THREE.MeshStandardMaterial({ color: 0x505050 });
-        
-        const cushion1 = new THREE.Mesh(cushionGeometry, cushionMaterial);
-        cushion1.position.set(-13.5, 1.25, -10);
-        cushion1.castShadow = true;
-        scene.add(cushion1);
-        
-        const cushion2 = new THREE.Mesh(cushionGeometry, cushionMaterial);
-        cushion2.position.set(-12, 1.25, -10);
-        cushion2.castShadow = true;
-        scene.add(cushion2);
-        
-        const cushion3 = new THREE.Mesh(cushionGeometry, cushionMaterial);
-        cushion3.position.set(-10.5, 1.25, -10);
-        cushion3.castShadow = true;
-        scene.add(cushion3);
-        
-        // Coffee table
-        const coffeeTableTopGeometry = new THREE.BoxGeometry(4, 0.2, 2.5);
-        const woodMaterial = new THREE.MeshStandardMaterial({ color: 0xB08968 });
-        const coffeeTableTop = new THREE.Mesh(coffeeTableTopGeometry, woodMaterial);
-        coffeeTableTop.position.set(-8, 0.6, -7);
-        coffeeTableTop.castShadow = true;
-        coffeeTableTop.receiveShadow = true;
-        scene.add(coffeeTableTop);
-        
-        const coffeeTableLegGeometry = new THREE.BoxGeometry(0.2, 0.6, 0.2);
-        
-        const leg1 = new THREE.Mesh(coffeeTableLegGeometry, woodMaterial);
-        leg1.position.set(-9.8, 0.3, -8);
-        scene.add(leg1);
-        
-        const leg2 = new THREE.Mesh(coffeeTableLegGeometry, woodMaterial);
-        leg2.position.set(-6.2, 0.3, -8);
-        scene.add(leg2);
-        
-        const leg3 = new THREE.Mesh(coffeeTableLegGeometry, woodMaterial);
-        leg3.position.set(-9.8, 0.3, -6);
-        scene.add(leg3);
-        
-        const leg4 = new THREE.Mesh(coffeeTableLegGeometry, woodMaterial);
-        leg4.position.set(-6.2, 0.3, -6);
-        scene.add(leg4);
-        
-        // Dining area
-        const diningTableGeometry = new THREE.BoxGeometry(5, 0.2, 3);
-        const diningTable = new THREE.Mesh(diningTableGeometry, woodMaterial);
-        diningTable.position.set(5, 1, -3);
-        diningTable.castShadow = true;
-        diningTable.receiveShadow = true;
-        scene.add(diningTable);
-        
-        const chairSeatGeometry = new THREE.BoxGeometry(1, 0.2, 1);
-        const chairBackGeometry = new THREE.BoxGeometry(1, 1.2, 0.2);
-        const chairMaterial = new THREE.MeshStandardMaterial({ color: 0x3D2314 });
-        
-        const chairPositions = [
-            { x: 3.5, z: -1.7 },
-            { x: 5, z: -1.7 },
-            { x: 6.5, z: -1.7 },
-            { x: 3.5, z: -4.3 },
-            { x: 5, z: -4.3 },
-            { x: 6.5, z: -4.3 }
-        ];
-        
-        chairPositions.forEach(pos => {
-            const chairSeat = new THREE.Mesh(chairSeatGeometry, chairMaterial);
-            chairSeat.position.set(pos.x, 0.6, pos.z);
-            chairSeat.castShadow = true;
-            scene.add(chairSeat);
-            
-            const chairBack = new THREE.Mesh(chairBackGeometry, chairMaterial);
-            chairBack.position.set(pos.x, 1.2, pos.z + (pos.z > -3 ? 0.5 : -0.5));
-            chairBack.castShadow = true;
-            scene.add(chairBack);
-            
-            const chairLegGeometry = new THREE.BoxGeometry(0.1, 0.6, 0.1);
-            for (let i = 0; i < 4; i++) {
-                const xOffset = (i % 2 === 0) ? 0.4 : -0.4;
-                const zOffset = (i < 2) ? 0.4 : -0.4;
-                const leg = new THREE.Mesh(chairLegGeometry, chairMaterial);
-                leg.position.set(pos.x + xOffset, 0.3, pos.z + zOffset);
-                scene.add(leg);
-            }
-        });
-        
-        // TV and speakers
-        const tvStandGeometry = new THREE.BoxGeometry(6, 0.5, 2);
-        const tvStandMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-        const tvStand = new THREE.Mesh(tvStandGeometry, tvStandMaterial);
-        tvStand.position.set(0, 0.25, -13);
+        const tvStand = new THREE.Mesh(
+            new THREE.BoxGeometry(3, 0.5, 1.5),
+            new THREE.MeshLambertMaterial({ color: 0x333333 })
+        );
+        tvStand.position.y = 0.25;
         tvStand.castShadow = true;
-        tvStand.receiveShadow = true;
-        scene.add(tvStand);
-        
-        const tvGeometry = new THREE.BoxGeometry(4, 2.5, 0.1);
-        const tvMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x000000,
-            roughness: 0.1,
-            metalness: 0.9
-        });
-        const tv = new THREE.Mesh(tvGeometry, tvMaterial);
-        tv.position.set(0, 1.75, -12.9);
-        tv.castShadow = true;
-        scene.add(tv);
-        
-        const tvContentGeometry = new THREE.PlaneGeometry(3.8, 2.3);
-        const tvContentMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x000000, // Black when off
-            emissive: 0xFFFFFF,
-            emissiveIntensity: 0,
-            side: THREE.DoubleSide
-        });
-        const tvContent = new THREE.Mesh(tvContentGeometry, tvContentMaterial);
-        tvContent.position.set(0, 1.75, -12.85);
-        scene.add(tvContent);
-        
-        const tvFrameGeometry = new THREE.BoxGeometry(4.2, 2.7, 0.2);
-        const tvFrameMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x222222,
-            roughness: 0.3,
-            metalness: 0.7
-        });
-        const tvFrame = new THREE.Mesh(tvFrameGeometry, tvFrameMaterial);
-        tvFrame.position.set(0, 1.75, -12.95);
-        tvFrame.castShadow = true;
-        scene.add(tvFrame);
-        
-        const leftSpeakerGeometry = new THREE.BoxGeometry(1.5, 3, 1);
-        const speakerMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x111111,
-            roughness: 0.9,
-            metalness: 0.1
-        });
-        const leftSpeaker = new THREE.Mesh(leftSpeakerGeometry, speakerMaterial);
-        leftSpeaker.position.set(-3.5, 1.5, -12.5);
-        leftSpeaker.castShadow = true;
-        scene.add(leftSpeaker);
-        
-        const speakerLedGeometry = new THREE.SphereGeometry(0.05, 16, 16);
-        const speakerLedMaterial = new THREE.MeshStandardMaterial({
-            color: 0x00FF00,
-            emissive: 0x000000, // Black emissive when off
-            emissiveIntensity: 0
-        });
-        const leftSpeakerLed = new THREE.Mesh(speakerLedGeometry, speakerLedMaterial);
-        leftSpeakerLed.position.set(-3.5, 2.9, -12);
-        scene.add(leftSpeakerLed);
-        
-        const speakerDriverGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.05, 32);
-        const driverMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x333333,
-            roughness: 0.8,
-            metalness: 0.2,
-            emissive: 0x000000, // Black emissive when off
-            emissiveIntensity: 0
-        });
-        
-        const woofer = new THREE.Mesh(speakerDriverGeometry, driverMaterial);
-        woofer.position.set(-3.5, 1.5, -12);
-        woofer.rotation.x = Math.PI / 2;
-        scene.add(woofer);
-        
-        const midRange = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.2, 0.2, 0.05, 32),
-            driverMaterial
+        tvGroup.add(tvStand);
+
+        const tvScreen = new THREE.Mesh(
+            new THREE.BoxGeometry(2.5, 1.5, 0.1),
+            new THREE.MeshBasicMaterial({ color: 0x000000 })
         );
-        midRange.position.set(-3.5, 2.2, -12);
-        midRange.rotation.x = Math.PI / 2;
-        scene.add(midRange);
+        tvScreen.position.set(0, 1.25, 0);
+        tvGroup.add(tvScreen);
+
+        tvGroup.position.set(0, 0, -6);
+        scene.add(tvGroup);
+
+        const fanGroup = new THREE.Group();
         
-        const tweeter = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.1, 0.1, 0.05, 32),
-            driverMaterial
+        const fanMotor = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.3, 0.3, 0.2),
+            new THREE.MeshLambertMaterial({ color: 0xCCCCCC })
         );
-        tweeter.position.set(-3.5, 2.8, -12);
-        tweeter.rotation.x = Math.PI / 2;
-        scene.add(tweeter);
-        
-        const grilleGeometry = new THREE.CylinderGeometry(0.45, 0.45, 0.02, 32);//speaker circle
-        const grilleMaterial = new THREE.MeshStandardMaterial({
-            color: 0x222222,
-            metalness: 0.5,
-            roughness: 0.7,
-            transparent: true,
-            opacity: 0.7
-        });
-        const grille = new THREE.Mesh(grilleGeometry, grilleMaterial);
-        grille.position.set(-3.5, 1.5, -11.95);
-        grille.rotation.x = Math.PI / 2;
-        scene.add(grille);
-        
-        const rightSpeaker = new THREE.Mesh(leftSpeakerGeometry, speakerMaterial);
-        rightSpeaker.position.set(3.5, 1.5, -12.5);
-        rightSpeaker.castShadow = true;
-        scene.add(rightSpeaker);
-        
-        const rightSpeakerLed = new THREE.Mesh(speakerLedGeometry, speakerLedMaterial.clone());
-        rightSpeakerLed.position.set(3.5, 2.9, -12);
-        scene.add(rightSpeakerLed);
-        
-        const wooferR = new THREE.Mesh(speakerDriverGeometry, driverMaterial);
-        wooferR.position.set(3.5, 1.5, -12);
-        wooferR.rotation.x = Math.PI / 2;
-        scene.add(wooferR);
-        
-        const midRangeR = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.2, 0.2, 0.05, 32),
-            driverMaterial
-        );
-        midRangeR.position.set(3.5, 2.2, -12);
-        midRangeR.rotation.x = Math.PI / 2;
-        scene.add(midRangeR);
-        
-        const tweeterR = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.1, 0.1, 0.05, 32),
-            driverMaterial
-        );
-        tweeterR.position.set(3.5, 2.8, -12);
-        tweeterR.rotation.x = Math.PI / 2;
-        scene.add(tweeterR);
-        
-        const grilleR = new THREE.Mesh(grilleGeometry, grilleMaterial);
-        grilleR.position.set(3.5, 1.5, -11.95);
-        grilleR.rotation.x = Math.PI / 2;
-        scene.add(grilleR);
-        
-        // Pendant light
-        // const pendantLightGeometry = new THREE.CylinderGeometry(1, 1, 0.8, 32);
-        // const pendantLightMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-        // const pendantLight = new THREE.Mesh(pendantLightGeometry, pendantLightMaterial);
-        // pendantLight.position.set(5, 5, -3);
-        // pendantLight.castShadow = true;
-        // scene.add(pendantLight);
-        
-        // const pendantLightSource = new THREE.PointLight(0xFFFFAA, 0.8, 10);
-        // pendantLightSource.position.set(5, 4.5, -3);
-        // pendantLightSource.castShadow = true;
-        // scene.add(pendantLightSource);
-        
-        // Ceiling fan
-        const fanHub = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.3, 0.3, 0.2, 16),
-            new THREE.MeshStandardMaterial({ color: 0xCCCCCC })
-        );
-        fanHub.position.set(-5, 6.8, -7);
-        fanHub.castShadow = true;
-        scene.add(fanHub);
-        
-        const fanMount = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.1, 0.1, 1, 8),
-            new THREE.MeshStandardMaterial({ color: 0xCCCCCC })
-        );
-        fanMount.position.set(-5, 7.3, -7);
-        fanMount.castShadow = true;
-        scene.add(fanMount);
-        
-        const bladeGeometry = new THREE.BoxGeometry(3, 0.1, 0.5);
-        const bladeMaterial = new THREE.MeshStandardMaterial({ color: 0xEEEEEE });
-        
-        const blade1 = new THREE.Mesh(bladeGeometry, bladeMaterial);
-        blade1.position.set(-5, 6.7, -7);
-        blade1.castShadow = true;
-        scene.add(blade1);
-        
-        const blade2 = new THREE.Mesh(bladeGeometry, bladeMaterial);
-        blade2.position.set(-5, 6.7, -7);
-        blade2.rotation.y = Math.PI / 2;
-        blade2.castShadow = true;
-        scene.add(blade2);
-        
-        const blade3 = new THREE.Mesh(bladeGeometry, bladeMaterial);
-        blade3.position.set(-5, 6.7, -7);
-        blade3.rotation.y = Math.PI / 4;
-        blade3.castShadow = true;
-        scene.add(blade3);
-        
-        const blade4 = new THREE.Mesh(bladeGeometry, bladeMaterial);
-        blade4.position.set(-5, 6.7, -7);
-        blade4.rotation.y = -Math.PI / 4;
-        blade4.castShadow = true;
-        scene.add(blade4);
-        
-        const fanBlades = [blade1, blade2, blade3, blade4];
-        
-        // AC unit
-        const acUnit = new THREE.Group();
-        acUnit.position.set(0, 6, -14.8);
+        fanGroup.add(fanMotor);
+
+        const fanBlades = [];
+        for (let i = 0; i < 4; i++) {
+            const blade = new THREE.Mesh(
+                new THREE.BoxGeometry(2, 0.05, 0.3),
+                new THREE.MeshLambertMaterial({ color: 0xDDDDDD })
+            );
+            blade.rotation.y = (i * Math.PI) / 2;
+            blade.castShadow = true;
+            fanBlades.push(blade);
+            fanGroup.add(blade);
+        }
+
+        fanGroup.position.set(2, 7, 0);
+        scene.add(fanGroup);
+
+        const acGroup = new THREE.Group();
         
         const acBody = new THREE.Mesh(
-            new THREE.BoxGeometry(2.5, 0.8, 0.6),
-            new THREE.MeshStandardMaterial({ color: 0xFFFFFF })
+            new THREE.BoxGeometry(2, 0.6, 0.4),
+            new THREE.MeshLambertMaterial({ color: 0xFFFFFF })
         );
         acBody.castShadow = true;
-        acUnit.add(acBody);
-        
-        const acPanel = new THREE.Mesh(
-            new THREE.BoxGeometry(2.3, 0.6, 0.1),
-            new THREE.MeshStandardMaterial({ color: 0xDDDDDD })
+        acGroup.add(acBody);
+
+        const acDisplay = new THREE.Mesh(
+            new THREE.BoxGeometry(0.3, 0.1, 0.05),
+            new THREE.MeshBasicMaterial({ color: 0x000080 })
         );
-        acPanel.position.z = 0.31;
-        acUnit.add(acPanel);
-        
-        const ventGeometry = new THREE.BoxGeometry(2.2, 0.05, 0.1);
-        const ventMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
-        
-        for (let i = 0; i < 5; i++) {
-            const vent = new THREE.Mesh(ventGeometry, ventMaterial);
-            vent.position.set(0, -0.25 + i * 0.1, 0.35);
-            acUnit.add(vent);
+        acDisplay.position.set(-0.6, 0.1, 0.21);
+        acGroup.add(acDisplay);
+
+        for (let i = 0; i < 4; i++) {
+            const vent = new THREE.Mesh(
+                new THREE.BoxGeometry(1.8, 0.05, 0.05),
+                new THREE.MeshLambertMaterial({ color: 0x333333 })
+            );
+            vent.position.set(0, -0.1 + i * 0.05, 0.21);
+            acGroup.add(vent);
         }
-        
-        const displayGeometry = new THREE.BoxGeometry(0.4, 0.1, 0.1);
-        const displayMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x0000AA,
-            emissive: 0x0000AA,
-            emissiveIntensity: 0
-        });
-        const display = new THREE.Mesh(displayGeometry, displayMaterial);
-        display.position.set(-0.8, 0.2, 0.35);
-        acUnit.add(display);
-        
-        scene.add(acUnit);
-        // Smart Plant System
-const plantGroup = new THREE.Group();
-plantGroup.position.set(12, 0, -12);
 
-// Pot
-const potGeometry = new THREE.CylinderGeometry(0.7, 0.5, 1.2, 16);
-const potMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0x8B4513,
-    roughness: 0.8
-});
-const pot = new THREE.Mesh(potGeometry, potMaterial);
-pot.castShadow = true;
-pot.receiveShadow = true;
-plantGroup.add(pot);
+        acGroup.position.set(5, 6, -7.4);
+        scene.add(acGroup);
 
-// Soil
-const soilGeometry = new THREE.CylinderGeometry(0.65, 0.65, 0.2, 16);
-const soilMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0x3A2A1A,
-    roughness: 1.0
-});
-const soil = new THREE.Mesh(soilGeometry, soilMaterial);
-soil.position.y = 0.5;
-plantGroup.add(soil);
+        let lightsOn = true;
+        let lightIntensity = 0.8;
+        let fanSpeed = 0; // 0 = off, 1 = low, 2 = high
+        let tvOn = false;
+        let temperature = 22;
 
-// Moisture Sensor
-const sensorGeometry = new THREE.BoxGeometry(0.1, 0.4, 0.03);
-const sensorMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0x333333,
-    metalness: 0.8
-});
-const moistureSensor = new THREE.Mesh(sensorGeometry, sensorMaterial);
-moistureSensor.position.set(0.3, 0.6, 0);
-plantGroup.add(moistureSensor);
+        function updateLights() {
+            const intensity = lightsOn ? lightIntensity : 0;
+            roomLight.intensity = intensity;
+            
+            const ambientIntensity = lightsOn ? 0.3 : 0.1;
+            ambientLight.intensity = ambientIntensity;
+        }
 
-// Plant System - Main Stem
-const stemGeometry = new THREE.CylinderGeometry(0.05, 0.08, 2.5, 8);
-const stemMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0x228B22, 
-    roughness: 0.9 
-});
-const stem = new THREE.Mesh(stemGeometry, stemMaterial);
-stem.position.y = 1.6;
-plantGroup.add(stem);
+        function updateFan() {
+        }
 
-// Create multiple leaves
-function createLeaf(stemHeight, angle, size, droop) {
-    const leafGroup = new THREE.Group();
-    
-    // Create a custom leaf shape
-    const leafShape = new THREE.Shape();
-    leafShape.moveTo(0, 0);
-    leafShape.bezierCurveTo(size * 0.3, size * 0.1, size * 0.7, size * 0.2, size, 0);
-    leafShape.bezierCurveTo(size * 0.9, -size * 0.15, size * 0.8, -size * 0.2, size * 0.5, -droop);
-    leafShape.bezierCurveTo(size * 0.3, -size * 0.2, size * 0.1, -size * 0.15, 0, 0);
-    
-    const leafGeometry = new THREE.ShapeGeometry(leafShape);
-    const leafMaterial = new THREE.MeshStandardMaterial({ 
-        color: plantNeedsWater ? 0x90EE90 : 0x228B22, 
-        side: THREE.DoubleSide,
-        roughness: 0.8
-    });
-    
-    const leaf = new THREE.Mesh(leafGeometry, leafMaterial);
-    leaf.position.y = stemHeight;
-    leaf.rotation.z = Math.PI / 2;
-    leaf.rotation.y = angle;
-    leafGroup.add(leaf);
-    
-    return leafGroup;
-}
+        function updateTV() {
+            if (tvOn) {
+                tvScreen.material.color.setHex(0x4169E1);
+            } else {
+                tvScreen.material.color.setHex(0x000000);
+            }
+        }
 
-// Add leaves at different heights and angles
-const leaves = [];
-for (let i = 0; i < 8; i++) {
-    const height = 0.8 + i * 0.2;
-    const angle = i * Math.PI / 4;
-    const size = 0.5 + Math.random() * 0.3;
-    const droop = 0.1 + Math.random() * 0.1;
-    const leaf = createLeaf(height, angle, size, droop);
-    leaves.push(leaf);
-    plantGroup.add(leaf);
-}
+        function updateButtonStates() {
+            document.getElementById('lights-on').classList.toggle('active', lightsOn);
+            document.getElementById('lights-off').classList.toggle('active', !lightsOn);
+            
+            document.getElementById('fan-off').classList.toggle('active', fanSpeed === 0);
+            document.getElementById('fan-low').classList.toggle('active', fanSpeed === 1);
+            document.getElementById('fan-high').classList.toggle('active', fanSpeed === 2);
+            
+            document.getElementById('tv-on').classList.toggle('active', tvOn);
+            document.getElementById('tv-off').classList.toggle('active', !tvOn);
+        }
 
-// Watering system
-const waterTankGeometry = new THREE.BoxGeometry(0.8, 0.4, 0.8);
-const waterTankMaterial = new THREE.MeshPhysicalMaterial({ 
-    color: 0xADD8E6, 
-    transmission: 0.7,
-    thickness: 0.1,
-    roughness: 0.1
-});
-const waterTank = new THREE.Mesh(waterTankGeometry, waterTankMaterial);
-waterTank.position.set(-0.9, 0.5, 0);
-plantGroup.add(waterTank);
-
-// Water level indicator
-const waterLevelGeometry = new THREE.BoxGeometry(0.75, 0.3, 0.75);
-const waterLevelMaterial = new THREE.MeshPhysicalMaterial({ 
-    color: 0x1E90FF, 
-    transmission: 0.9,
-    roughness: 0,
-    metalness: 0.1
-});
-const waterLevel = new THREE.Mesh(waterLevelGeometry, waterLevelMaterial);
-waterLevel.position.set(-0.9, 0.45, 0);
-plantGroup.add(waterLevel);
-
-// Pump and tubes
-const pumpGeometry = new THREE.CylinderGeometry(0.1, 0.1, 0.2, 8);
-const pumpMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0x444444,
-    metalness: 0.7
-});
-const pump = new THREE.Mesh(pumpGeometry, pumpMaterial);
-pump.position.set(-0.9, 0.75, 0);
-pump.rotation.x = Math.PI / 2;
-plantGroup.add(pump);
-
-// Create a tube from pump to plant
-const tubePath = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-0.9, 0.75, 0.1),
-    new THREE.Vector3(-0.7, 0.75, 0.3),
-    new THREE.Vector3(-0.4, 0.7, 0.4),
-    new THREE.Vector3(-0.1, 0.65, 0.3),
-    new THREE.Vector3(0, 0.6, 0.1)
-]);
-
-const tubeGeometry = new THREE.TubeGeometry(tubePath, 16, 0.03, 8, false);
-const tubeMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0x333333,
-    roughness: 0.8
-});
-const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
-plantGroup.add(tube);
-
-// Water droplet particles system - will be activated when watering
-const waterDrops = [];
-const dropGeometry = new THREE.SphereGeometry(0.03, 8, 8);
-const dropMaterial = new THREE.MeshPhysicalMaterial({ 
-    color: 0x00BFFF, 
-    transmission: 0.9,
-    roughness: 0.1
-});
-
-for (let i = 0; i < 10; i++) {
-    const drop = new THREE.Mesh(dropGeometry, dropMaterial);
-    drop.position.set(0, 0.6, 0.1);
-    drop.visible = false;
-    drop.fallSpeed = 0.02 + Math.random() * 0.02;
-    drop.lifespan = Math.random() * 60; // frames
-    drop.age = 0;
-    drop.isActive = false;
-    waterDrops.push(drop);
-    plantGroup.add(drop);
-}
-
-// Moisture display panel
-const displayPanelGeometry = new THREE.BoxGeometry(0.5, 0.2, 0.05);
-const displayPanelMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0x222222
-});
-const displayPanel = new THREE.Mesh(displayPanelGeometry, displayPanelMaterial);
-displayPanel.position.set(0, 0, -0.7);
-plantGroup.add(displayPanel);
-
-// Moisture level display
-const moistureDisplayGeometry = new THREE.PlaneGeometry(0.4, 0.15);
-const moistureDisplayMaterial = new THREE.MeshBasicMaterial({ 
-    color: 0x00FF00,
-    emissive: 0x00FF00,
-    emissiveIntensity: 0.5
-});
-const moistureDisplay = new THREE.Mesh(moistureDisplayGeometry, moistureDisplayMaterial);
-moistureDisplay.position.set(0, 0, -0.675);
-plantGroup.add(moistureDisplay);
-
-scene.add(plantGroup);
-        
-        // Control event listeners
         document.getElementById('lights-on').addEventListener('click', () => {
             lightsOn = true;
             updateLights();
             updateButtonStates();
         });
-        
+
         document.getElementById('lights-off').addEventListener('click', () => {
             lightsOn = false;
             updateLights();
             updateButtonStates();
         });
-        
+
         document.getElementById('light-intensity').addEventListener('input', (e) => {
             lightIntensity = e.target.value / 100;
-            updateLights();
-        });
-        
-        document.getElementById('led-on').addEventListener('click', () => {
-            ledOn = true;
-            updateLedLights();
-            updateButtonStates();
-        });
-        
-        document.getElementById('led-off').addEventListener('click', () => {
-            ledOn = false;
-            updateLedLights();
-            updateButtonStates();
+            if (lightsOn) updateLights();
         });
 
-        document.getElementById('wall-lights-toggle').addEventListener('click', toggleWallLights);
-        
-        document.getElementById('led-intensity').addEventListener('input', (e) => {
-            ledIntensity = e.target.value / 100;
-            updateLedLights();
-        });
-        
-        document.getElementById('ac-on').addEventListener('click', () => {
-            acOn = true;
-            updateButtonStates();
-        });
-        
-        document.getElementById('ac-off').addEventListener('click', () => {
-            acOn = false;
-            updateButtonStates();
-        });
-        
-        document.getElementById('ac-temp').addEventListener('input', (e) => {
-            temperature = parseInt(e.target.value);
-            document.getElementById('temp-value').textContent = temperature + '°C';
-        });
-        
         document.getElementById('fan-off').addEventListener('click', () => {
             fanSpeed = 0;
             updateButtonStates();
         });
-        
+
         document.getElementById('fan-low').addEventListener('click', () => {
             fanSpeed = 1;
             updateButtonStates();
         });
-        
-        document.getElementById('fan-medium').addEventListener('click', () => {
+
+        document.getElementById('fan-high').addEventListener('click', () => {
             fanSpeed = 2;
             updateButtonStates();
         });
-        
-        document.getElementById('fan-high').addEventListener('click', () => {
-            fanSpeed = 3;
-            updateButtonStates();
-        });
-        
-        document.getElementById('tv-speaker-on').addEventListener('click', () => {
-            tvSpeakerOn = true;
-            updateTvSpeaker();
-            updateButtonStates();
-        });
-        
-        document.getElementById('tv-speaker-off').addEventListener('click', () => {
-            tvSpeakerOn = false;
-            updateTvSpeaker();
-            updateButtonStates();
-        });
-        // Add event listeners for smart plant controls
-document.getElementById('watering-system-on').addEventListener('click', () => {
-    plantWateringSystem = true;
-    updateButtonStates();
-});
 
-document.getElementById('watering-system-off').addEventListener('click', () => {
-    plantWateringSystem = false;
-    updateButtonStates();
-});
+        document.getElementById('tv-on').addEventListener('click', () => {
+            tvOn = true;
+            updateTV();
+            updateButtonStates();
+        });
 
-document.getElementById('moisture-level').addEventListener('input', (e) => {
-    moistureLevel = parseInt(e.target.value);
-    document.getElementById('moisture-value').textContent = moistureLevel + '%';
-    plantNeedsWater = moistureLevel < 60;
-    updatePlantAppearance();
-});
-        
-    //     // Curtain controls
-    //     document.getElementById('curtains-open').addEventListener('click', () => {
-    //         curtainsOpen = true;
-    //         updateCurtains();
-    //         updateButtonStates();
-    //     });
-        
-    //     document.getElementById('curtains-close').addEventListener('click', () => {
-    //         curtainsOpen = false;
-    //         updateCurtains();
-    //         updateButtonStates();
-    //     });
-        
-    //     function updateCurtains() {
-    // curtains.forEach(curtain => {
-    //     curtain.visible = !curtainsOpen;
-    // });
-    
-    // Update window effect
-    // window1.material.transmission = curtainsOpen ? 0.95 : 0.7;
-    // window2.material.transmission = curtainsOpen ? 0.95 : 0.7;
-    // window3.material.transmission = curtainsOpen ? 0.95 : 0.7;
-// }
-        
-        // Camera controls
-        const moveSpeed = 0.5;
-        const rotationSpeed = 0.05;
-        const zoomSpeed = 0.5;
-        
-        function moveForward() {
-            const direction = new THREE.Vector3();
-            camera.getWorldDirection(direction);
-            direction.y = 0;
-            direction.normalize();
-            camera.position.add(direction.multiplyScalar(moveSpeed));
-            cameraTarget.add(direction.multiplyScalar(moveSpeed));
-            camera.lookAt(cameraTarget);
-        }
-        
-        function moveBack() {
-            const direction = new THREE.Vector3();
-            camera.getWorldDirection(direction);
-            direction.y = 0;
-            direction.normalize();
-            camera.position.add(direction.multiplyScalar(-moveSpeed));
-            cameraTarget.add(direction.multiplyScalar(-moveSpeed));
-            camera.lookAt(cameraTarget);
-        }
-        
-        function moveLeft() {
-            const direction = new THREE.Vector3();
-            camera.getWorldDirection(direction);
-            const left = new THREE.Vector3();
-            left.crossVectors(new THREE.Vector3(0, 1, 0), direction).normalize();
-            camera.position.add(left.multiplyScalar(moveSpeed));
-            cameraTarget.add(left.multiplyScalar(moveSpeed));
-            camera.lookAt(cameraTarget);
-        }
-        
-        function moveRight() {
-            const direction = new THREE.Vector3();
-            camera.getWorldDirection(direction);
-            const right = new THREE.Vector3();
-            right.crossVectors(direction, new THREE.Vector3(0, 1, 0)).normalize();
-            camera.position.add(right.multiplyScalar(moveSpeed));
-            cameraTarget.add(right.multiplyScalar(moveSpeed));
-            camera.lookAt(cameraTarget);
-        }
-        
-        function lookLeft() {
-            const direction = new THREE.Vector3().subVectors(cameraTarget, camera.position);
-            const rotation = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotationSpeed);
-            direction.applyQuaternion(rotation);
-            cameraTarget.copy(camera.position).add(direction);
-            camera.lookAt(cameraTarget);
-        }
-        
-        function lookRight() {
-            const direction = new THREE.Vector3().subVectors(cameraTarget, camera.position);
-            const rotation = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), -rotationSpeed);
-            direction.applyQuaternion(rotation);
-            cameraTarget.copy(camera.position).add(direction);
-            camera.lookAt(cameraTarget);
-        }
-        
-        function lookUp() {
-            const direction = new THREE.Vector3().subVectors(cameraTarget, camera.position);
-            const right = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0)).normalize();
-            const rotation = new THREE.Quaternion().setFromAxisAngle(right, rotationSpeed);
-            direction.applyQuaternion(rotation);
-            const angle = Math.atan2(direction.y, Math.sqrt(direction.x * direction.x + direction.z * direction.z));
-            if (angle < Math.PI/2 && angle > -Math.PI/2) {
-                cameraTarget.copy(camera.position).add(direction);
-                camera.lookAt(cameraTarget);
-            }
-        }
-        
-        function lookDown() {
-            const direction = new THREE.Vector3().subVectors(cameraTarget, camera.position);
-            const right = new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0)).normalize();
-            const rotation = new THREE.Quaternion().setFromAxisAngle(right, -rotationSpeed);
-            direction.applyQuaternion(rotation);
-            const angle = Math.atan2(direction.y, Math.sqrt(direction.x * direction.x + direction.z * direction.z));
-            if (angle < Math.PI/2 && angle > -Math.PI/2) {
-                cameraTarget.copy(camera.position).add(direction);
-                camera.lookAt(cameraTarget);
-            }
-        }
-        
-        function zoomIn() {
-            const direction = new THREE.Vector3().subVectors(cameraTarget, camera.position).normalize();
-            camera.position.add(direction.multiplyScalar(zoomSpeed));
-            camera.lookAt(cameraTarget);
-        }
-        
-        function zoomOut() {
-            const direction = new THREE.Vector3().subVectors(cameraTarget, camera.position).normalize();
-            camera.position.add(direction.multiplyScalar(-zoomSpeed));
-            camera.lookAt(cameraTarget);
-        }
-        
-        // Keyboard controls
-        const keyState = {};
-        
-        document.addEventListener('keydown', (event) => {
-            keyState[event.key] = true;
+        document.getElementById('tv-off').addEventListener('click', () => {
+            tvOn = false;
+            updateTV();
+            updateButtonStates();
         });
-        
-        document.addEventListener('keyup', (event) => {
-            keyState[event.key] = false;
-        });
-        
-        function handleKeyboardInput() {
-            if (keyState['w'] || keyState['W']) moveForward();
-            if (keyState['s'] || keyState['S']) moveBack();
-            if (keyState['a'] || keyState['A']) moveLeft();
-            if (keyState['d'] || keyState['D']) moveRight();
-            if (keyState['ArrowLeft']) lookLeft();
-            if (keyState['ArrowRight']) lookRight();
-            if (keyState['ArrowUp'] || keyState['q'] || keyState['Q']) lookUp();
-            if (keyState['ArrowDown'] || keyState['e'] || keyState['E']) lookDown();
-            if (keyState['PageUp']) zoomIn();
-            if (keyState['PageDown']) zoomOut();
-        }
-        
-        function updateLights() {
-            const intensity = lightsOn ? lightIntensity : 0;
-            ceilingLight1.intensity = intensity;
-            ceilingLight2.intensity = intensity;
-            ceilingLight3.intensity = intensity;
-            diningLight.intensity = intensity;
-            // pendantLightSource.intensity = intensity;
-        }
-        
-        function updateLedLights() {
-            const intensity = ledOn ? ledIntensity : 0;
-            ledLight1.intensity = intensity;
-            ledLight2.intensity = intensity;
-            ledPanel1.material.emissiveIntensity = intensity;
-            ledPanel2.material.emissiveIntensity = intensity;
-        }
-        
-        function updateTvSpeaker() {
-            // TV
-            tvContent.material.emissiveIntensity = tvSpeakerOn ? 0.8 : 0;
-            tvContent.material.color.setHex(tvSpeakerOn ? 0xFFFFFF : 0x000000);
-            // LEDs
-            leftSpeakerLed.material.emissiveIntensity = tvSpeakerOn ? 1 : 0;
-            leftSpeakerLed.material.emissive.setHex(tvSpeakerOn ? 0x00FF00 : 0x000000);
-            rightSpeakerLed.material.emissiveIntensity = tvSpeakerOn ? 1 : 0;
-            rightSpeakerLed.material.emissive.setHex(tvSpeakerOn ? 0x00FF00 : 0x000000);
-            // Drivers
-            [woofer, wooferR, midRange, midRangeR, tweeter, tweeterR].forEach(driver => {
-                driver.material.emissiveIntensity = tvSpeakerOn ? 1 : 0;
-                driver.material.emissive.setHex(tvSpeakerOn ? 0x00FF00 : 0x000000);
-                driver.material.color.setHex(tvSpeakerOn ? 0x333333 : 0x333333);
-            });
-        }
-        
-        function updatePlantAppearance() {
-    // Update leaf colors based on moisture level
-    leaves.forEach(leaf => {
-        const leafMesh = leaf.children[0];
-        if (leafMesh.material && leafMesh.material.color) {
-            if (plantNeedsWater) {
-                // Drier plant - more yellow/brown
-                const dryness = Math.max(0, 60 - moistureLevel) / 60;
-                leafMesh.material.color.setHSL(0.25 - dryness * 0.15, 0.6, 0.5 - dryness * 0.2);
+
+        document.getElementById('ac-temp').addEventListener('input', (e) => {
+            temperature = parseInt(e.target.value);
+            document.getElementById('temp-display').textContent = temperature + '°C';
+            
+            const tempRatio = (temperature - 16) / (30 - 16);
+            const hue = (1 - tempRatio) * 0.6; // Blue (cold) to red (hot)
+            roomLight.color.setHSL(hue, 0.3, 1);
+
+            if (temperature < 20) {
+                acDisplay.material.color.setHex(0x0000FF); // Blue for cold
+            } else if (temperature > 25) {
+                acDisplay.material.color.setHex(0xFF0000); // Red for hot
             } else {
-                // Well-watered plant - vibrant green
-                leafMesh.material.color.setHex(0x228B22);
+                acDisplay.material.color.setHex(0x00FF00); // Green for comfortable
             }
+        });
+
+        let isMouseDown = false;
+        let mouseX = 0, mouseY = 0;
+
+        document.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isMouseDown = false;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isMouseDown) {
+                const deltaX = e.clientX - mouseX;
+                const deltaY = e.clientY - mouseY;
+                
+                camera.position.x += deltaX * 0.01;
+                camera.position.y -= deltaY * 0.01;
+                
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                
+                camera.lookAt(0, 0, 0);
+            }
+        });
+
+        document.addEventListener('wheel', (e) => {
+            const zoomSpeed = 0.5;
+            camera.position.z += e.deltaY * zoomSpeed * 0.01;
+            camera.position.z = Math.max(5, Math.min(20, camera.position.z));
+        });
+        let animationTime = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            animationTime += 0.01;
+            const radius = 10;
+            camera.position.x = Math.sin(animationTime * 0.1) * radius;
+            camera.position.z = Math.cos(animationTime * 0.1) * radius;
+            camera.lookAt(0, 0, 0);
+
+            if (fanSpeed > 0) {
+                const rotationSpeed = fanSpeed * 0.1;
+                fanBlades.forEach(blade => {
+                    blade.rotation.z += rotationSpeed;
+                });
+            }
+
+            if (tvOn) {
+                const r = Math.sin(animationTime) * 0.3 + 0.5;
+                const g = Math.sin(animationTime + 2) * 0.3 + 0.5;
+                const b = Math.sin(animationTime + 4) * 0.3 + 0.5;
+                tvScreen.material.color.setRGB(r, g, b);
+            }
+
+            renderer.render(scene, camera);
         }
-    });
-
-    // Update moisture display
-    if (moistureDisplay.material) {
-        if (moistureDisplay.material.color) {
-            moistureDisplay.material.color.setHSL(
-                moistureLevel > 60 ? 0.3 : 0.15 - (moistureLevel / 60) * 0.15,
-                0.8,
-                0.5
-            );
-        }
-        if (moistureDisplay.material.emissive) {
-            moistureDisplay.material.emissive.setHSL(
-                moistureLevel > 60 ? 0.3 : 0.15 - (moistureLevel / 60) * 0.15,
-                0.8,
-                0.5
-            );
-        }
-    }
-}
-
-function updateCurtains() {
-    curtains.forEach(curtain => {
-        curtain.material = curtainMaterials[curtainColor];
-        curtain.position.x = curtainsOpen ? 14.5 : 14.9; // Open position: 14.5, Closed: 14.9
-    });
-}
-
-
-// Add event listeners for curtain controls
-// Single toggle button for curtains
-document.getElementById('curtains-toggle').addEventListener('click', () => {
-    curtainsOpen = !curtainsOpen;
-    updateCurtains();
-    updateButtonStates();
-});
-
-document.getElementById('curtain-color').addEventListener('change', (e) => {
-    curtainColor = e.target.value;
-    updateCurtains();
-});
-        function updateButtonStates() {
-            document.getElementById('lights-on').className = lightsOn ? 'active' : '';
-            document.getElementById('lights-off').className = !lightsOn ? 'active' : '';
-            document.getElementById('led-on').className = ledOn ? 'active' : '';
-            document.getElementById('led-off').className = !ledOn ? 'active' : '';
-            document.getElementById('ac-on').className = acOn ? 'active' : '';
-            document.getElementById('ac-off').className = !acOn ? 'active' : '';
-            document.getElementById('fan-off').className = fanSpeed === 0 ? 'active' : '';
-            document.getElementById('fan-low').className = fanSpeed === 1 ? 'active' : '';
-            document.getElementById('fan-medium').className = fanSpeed === 2 ? 'active' : '';
-            document.getElementById('fan-high').className = fanSpeed === 3 ? 'active' : '';
-            document.getElementById('tv-speaker-on').className = tvSpeakerOn ? 'active' : '';
-            document.getElementById('tv-speaker-off').className = !tvSpeakerOn ? 'active' : '';
-            document.getElementById('wall-lights-toggle').className = wallLightsOn ? 'active' : '';
-            document.getElementById('disco-on').className = discoLightsOn ? 'active' : '';
-            document.getElementById('disco-off').className = !discoLightsOn ? 'active' : '';
-            document.getElementById('watering-system-on').className = plantWateringSystem ? 'active' : '';
-            document.getElementById('watering-system-off').className = !plantWateringSystem ? 'active' : '';
-         
-    // ... existing button state code ...
-    const curtainButton = document.getElementById('curtains-toggle');
-    curtainButton.textContent = "Open/Close"; // Static text
-    curtainButton.classList.toggle('active', curtainsOpen);
-}
-        
-        
-        // Initialize states
         updateLights();
-        updateLedLights();
-        updateTvSpeaker();
-        updateCurtains();
+        updateTV();
         updateButtonStates();
         
-        // Window resize
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-        
-        // Animation loop
-        let time = 0;
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            time += 0.01;
-            
-            handleKeyboardInput();
-            
-            if (fanSpeed > 0) {
-                const rotationSpeed = fanSpeed * 0.05;
-                fanBlades.forEach(blade => {
-                    blade.rotation.y += rotationSpeed;
-                });
-            }
-            
-            if (acOn) {
-                acUnit.children.forEach((child, index) => {
-                    if (index >= 2 && index <= 6) {
-                        child.rotation.x = Math.sin(time * 5 + index) * 0.1;
-                    }
-                });
-                const tempRatio = (temperature - 16) / (30 - 16);
-                const display = acUnit.children[7];
-                display.material.emissiveIntensity = 0.8;
-                display.material.emissive.setHSL(0.6 - tempRatio * 0.6, 1, 0.5);
-            } else {
-                const display = acUnit.children[7];
-                display.material.emissiveIntensity = 0;
-                display.material.color.setHex(0x0000AA);
-            }
-            
-            if (tvSpeakerOn) {
-                // TV color animation
-                const tvTime = time * 0.5;
-                const r = Math.sin(tvTime) * 0.5 + 0.5;
-                const g = Math.sin(tvTime + 2) * 0.5 + 0.5;
-                const b = Math.sin(tvTime + 4) * 0.5 + 0.5;
-                tvContent.material.color.setRGB(r, g, b);
-                
-                // LED and driver pulse
-                const pulse = Math.sin(time * 2) * 0.2 + 0.8;
-                leftSpeakerLed.material.emissiveIntensity = pulse;
-                rightSpeakerLed.material.emissiveIntensity = pulse;
-                [woofer, wooferR, midRange, midRangeR, tweeter, tweeterR].forEach(driver => {
-                    driver.material.emissiveIntensity = pulse;
-                    driver.material.emissive.setHex(0x00FF00); // Green glow
-                });
-            } else {
-                // Ensure off state
-                tvContent.material.emissiveIntensity = 0;
-                tvContent.material.color.setHex(0x000000);
-                leftSpeakerLed.material.emissiveIntensity = 0;
-                leftSpeakerLed.material.emissive.setHex(0x000000);
-                rightSpeakerLed.material.emissiveIntensity = 0;
-                rightSpeakerLed.material.emissive.setHex(0x000000);
-                [woofer, wooferR, midRange, midRangeR, tweeter, tweeterR].forEach(driver => {
-                    driver.material.emissiveIntensity = 0;
-                    driver.material.emissive.setHex(0x000000);
-                    driver.material.color.setHex(0x333333);
-                });
-            }
-            
-            if (acOn || fanSpeed > 0 || tvSpeakerOn) {
-                const wooferPos = Math.sin(time * 5) * 0.02;
-                woofer.position.z = -12 + wooferPos;
-                wooferR.position.z = -12 + wooferPos;
-                const midPos = Math.sin(time * 7) * 0.01;
-                midRange.position.z = -12 + midPos;
-                midRangeR.position.z = -12 + midPos;
-            }
-            // Disco lights animation
-if (discoLightsOn) {
-    const discoTime = time * discoSpeed;
-    
-    // Rotate disco ball
-    discoBall.rotation.y = discoTime * 0.5;
-    
-    // Change colors
-    discoLight1.color.setHex(discoColors[Math.floor(discoTime) % discoColors.length]);
-    discoLight2.color.setHex(discoColors[(Math.floor(discoTime) + 2) % discoColors.length]);
-    discoLight3.color.setHex(discoColors[(Math.floor(discoTime) + 4) % discoColors.length]);
-    
-    // Move light positions
-    discoLight1.position.x = -10 + Math.sin(discoTime) * 3;
-    discoLight2.position.z = -5 + Math.sin(discoTime * 1.3) * 3;
-    discoLight3.position.x = 10 + Math.sin(discoTime * 0.7) * 3;
-    
-    // Update direction
-    discoLight1.target.position.set(
-        Math.sin(discoTime * 1.1) * 10,
-        0,
-        Math.cos(discoTime * 1.1) * 10
-    );
-    discoLight2.target.position.set(
-        Math.sin(discoTime * 0.9) * 10,
-        0,
-        Math.cos(discoTime * 0.9) * 10
-    );
-    discoLight3.target.position.set(
-        Math.sin(discoTime * 1.3) * 10,
-        0,
-        Math.cos(discoTime * 1.3) * 10
-    );
-    
-    scene.add(discoLight1.target);
-    scene.add(discoLight2.target);
-    scene.add(discoLight3.target);
-}
-// Smart plant system animation
-if (plantWateringSystem && plantNeedsWater) {
-    // Animate water drops
-    waterDrops.forEach(drop => {
-        if (!drop.isActive && Math.random() < 0.1) {
-            // Activate new drop
-            drop.position.set(
-                (Math.random() - 0.5) * 0.2, 
-                0.6, 
-                (Math.random() - 0.5) * 0.2
-            );
-            drop.visible = true;
-            drop.isActive = true;
-            drop.age = 0;
-        }
-        
-        if (drop.isActive) {
-            drop.position.y -= drop.fallSpeed;
-            drop.age++;
-            
-            // Deactivate if it hits soil or ages out
-            if (drop.position.y <= 0.5 || drop.age >= drop.lifespan) {
-                drop.visible = false;
-                drop.isActive = false;
-                
-                // Increase moisture level when drops hit soil
-                if (drop.position.y <= 0.5 && moistureLevel < 100) {
-                    moistureLevel = Math.min(100, moistureLevel + 0.1);
-                    document.getElementById('moisture-level').value = Math.floor(moistureLevel);
-                    document.getElementById('moisture-value').textContent = Math.floor(moistureLevel) + '%';
-                    plantNeedsWater = moistureLevel < 60;
-                    updatePlantAppearance();
-                }
-            }
-        }
-    }); 
-    
-    // Animate pump
-    if (time % 2 < 1) {
-        pump.scale.y = 1 + Math.sin(time * 10) * 0.1;
-    }
-} else {
-    // Hide all water drops when system is off
-    waterDrops.forEach(drop => {
-        drop.visible = false;
-        drop.isActive = false;
-    });
-}
 
-// Decrease moisture over time
-if (!plantWateringSystem && moistureLevel > 0) {
-    moistureLevel = Math.max(0, moistureLevel - 0.01);
-    if (Math.floor(moistureLevel) % 1 === 0) {
-        document.getElementById('moisture-level').value = Math.floor(moistureLevel);
-        document.getElementById('moisture-value').textContent = Math.floor(moistureLevel) + '%';
-    }
-    plantNeedsWater = moistureLevel < 60;
-    updatePlantAppearance();
-}
-            
-            renderer.render(scene, camera);
-        }
-        
         animate();
     </script>
 </body>
