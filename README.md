@@ -86,8 +86,3 @@ Then open → [http://localhost:8000/index.html](http://localhost:8000/index.htm
 * Voice control integration
 * Mobile-friendly controls
 
----
-
----
-
-Do you also want me to make a **short resume-style description** for this project (2–3 bullets), so you can directly include it in your CV?
