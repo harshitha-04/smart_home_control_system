@@ -1,52 +1,75 @@
-# Smart Home Digital Twin - README
+🏠 Smart Home 3D Simulation
 
-## Overview
-This project is a 3D interactive digital twin of a smart home, built using Three.js. It allows users to control various smart home devices and visualize their effects in a realistic 3D environment.
+A 3D interactive smart home simulation built with Three.js, where you can control lights, fan, TV, and AC in a virtual living room environment. This project demonstrates real-time device interactions, 3D rendering, and interactive UI controls.
 
-## Features
-- **Interactive 3D Environment**: Navigate through the smart home using keyboard controls
-- **Smart Home Controls**:
-  - Ceiling lights (on/off with adjustable intensity)
-  - LED panel lights (on/off with adjustable intensity)
-  - AC unit (on/off with temperature control)
-  - Ceiling fan (multiple speed settings)
-  - TV & speakers system
-  - Wall sconce lights
-  - Disco lights with adjustable speed
-  - Smart plant watering system with moisture monitoring
-  - Motorized curtains with color selection
-- **Realistic Visual Effects**:
-  - Dynamic lighting
-  - Animated devices (fan blades, TV effects, disco lights)
-  - Interactive plant watering system
-  - Opening/closing curtains
+✨ Features
 
-## How to Use
-1. Open the HTML file in a modern web browser
-2. Use the control panel on the left to interact with smart home devices
-3. Navigate the 3D environment using keyboard controls:
-   - **W/S**: Move forward/backward
-   - **A/D**: Move left/right
-   - **Arrow Keys**: Look around
-   - **Q/E**: Look up/down
-   - **Page Up/Down**: Zoom in/out
+Room Lights 💡
 
-## Technical Details
-- Built with Three.js (r128)
-- Uses WebGL for hardware-accelerated 3D rendering
-- Responsive design that adapts to window size
-- Physics-based lighting and materials
-- Interactive controls with visual feedback
+ON/OFF toggle
 
-## Requirements
-- Modern web browser with WebGL support (Chrome, Firefox, Edge, Safari)
-- Internet connection (for loading Three.js from CDN)
+Adjustable brightness (intensity slider)
 
-## Future Enhancements
-- Add more smart home devices (security system, smart appliances)
-- Implement voice control integration
-- Add day/night cycle
-- Improve mobile device support
+Ceiling Fan 🌀
 
-## License
-This project is open-source and available for educational and personal use. Commercial use may require additional permissions.
+OFF / LOW / HIGH speed modes
+
+Realistic rotating fan blades
+
+Television 📺
+
+ON/OFF toggle
+
+Animated color effects when ON
+
+Air Conditioner (AC) ❄️🔥
+
+Adjustable temperature (16°C – 30°C)
+
+Dynamic AC display color (blue for cold, green for comfort, red for hot)
+
+Room lighting hue changes based on temperature
+
+3D Environment
+
+Living room with sofa, TV stand, walls, and floor
+
+Dynamic camera movement (orbit + zoom + drag controls)
+
+Soft shadows and realistic lighting
+
+🎮 Controls
+
+Mouse Drag → Rotate view
+
+Scroll Wheel → Zoom in/out
+
+UI Panel (top-left) → Control devices
+
+🛠️ Tech Stack
+
+Three.js (r128) → 3D rendering and animations
+
+HTML5 + CSS3 + JavaScript → UI and interactivity
+
+WebGL → Hardware-accelerated graphics
+
+🚀 Getting Started
+1. Clone the repository
+git clone https://github.com/your-username/smart-home-3d.git
+cd smart-home-3d
+
+2. Run locally
+Option A: Open directly
+
+Just open index.html in your browser
+
+Option B: Run with Python server
+# Python 3
+python -m http.server 8000
+
+# Or Windows
+py -m http.server 8000
+
+
+Then open → http://localhost:8000/index.html
