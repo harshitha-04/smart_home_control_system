@@ -56,7 +56,7 @@ A 3D interactive smart home simulation built with Three.js, where you can contro
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/smart-home-3d.git
+git clone https://github.com/harshitha-04/smart-home-3d.git
 cd smart-home-3d
 ```
 
